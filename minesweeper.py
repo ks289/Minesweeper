@@ -1,6 +1,15 @@
 import random, re
 
+"""
+The class Board. This is used to create a minesweeper board, of a given size and randomly distribute
+a given number of bombs. Upon the player 'digging' at a given coordinate all relevant surrounding tiles 
+will be recursively unearthed.
+"""
 class Board:
+    """
+    The constructor for a new board. The initial values are set and a new board is created with its values
+    assigned. The tiles that have been dug so far are stored in a set as this should contain no duplicates. 
+    """
     def __init__(self, dim_size, num_bombs):
         self.dim_size = dim_size
         self.num_bombs = num_bombs
@@ -10,6 +19,12 @@ class Board:
 
         self.dug = set()
 
+    """
+    This will create a new board, with every tile initially having the value 'None'. Then
+    random locations are selected to plant the mines.
+    Returns:
+        The newly created board where '*' represent the bombs.
+    """
     def make_new_board(self):
         board = [[None for _ in range(self.dim_size)] for _ in range(self.dim_size)]
         
@@ -25,12 +40,20 @@ class Board:
                 
         return board
 
+    """
+    This assigns the values to the board depending on its proximity to a mine.
+    """
     def assign_values_to_board(self):
         for r in range(self.dim_size):
             for c in range(self.dim_size):
                 if self.board[r][c] != '*':
                     self.board[r][c] = self.get_num_neighboring_bombs(r, c)
-
+                    
+    """
+    This will get the number of neighboring bombs.
+    Returns:
+        The number of neighboring bombs.
+    """
     def get_num_neighboring_bombs(self, row, col):
         num_neighboring_bombs = 0
         for r in range(max(0, row-1), min(self.dim_size-1, row+1)+1):
@@ -42,6 +65,14 @@ class Board:
 
         return num_neighboring_bombs
 
+    """
+    This will dig at a given location. If the given location contains a mine then the player will lose.
+    Otherwise then the surroundings tiles are recursively dug up to unearth all of the surrounding 'safe'
+    tiles.
+    Returns:
+        This will return True if the dig was successful and False if the location was a bomb,
+        which will result in a game over.
+    """
     def dig(self, row, col):
         self.dug.add((row, col))
 
@@ -58,6 +89,9 @@ class Board:
 
         return True
 
+    """
+    This is used to ensure the output is human readable.
+    """
     def __str__(self):
         visible_board = [[None for _ in range(self.dim_size)] for _ in range(self.dim_size)]
         for row in range(self.dim_size):
@@ -101,6 +135,10 @@ class Board:
 
         return string_rep
 
+"""
+This is the main game loop which will keep prompting the user to dig at a set of coordinates,
+until either they unearth a mine and lose or successfully avoid all of the mines and win the game.
+"""
 def play(dim_size=10, num_bombs=10):
     board = Board(dim_size, num_bombs)
     safe = True 
